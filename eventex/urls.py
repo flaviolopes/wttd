@@ -21,7 +21,7 @@ from eventex.core.views import home
 
 
 urlpatterns = [
-    # url(r'^$', eventex.core.views.home),
+    # url(r'^$', 'eventex.core.views.home'),
     # url(r'^$', eventex_views.home),
     url(r'^$', home),
 
