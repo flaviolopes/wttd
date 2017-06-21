@@ -112,7 +112,8 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/1.11/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+# LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'pt-br'
 
 TIME_ZONE = 'UTC'
 
@@ -129,3 +130,14 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles') # Este é o diretorio onde o Django vai copiar todos
                                                     # arquivos estáticos do projeto
+
+## Configuração de E-mail
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  ## Aqui só para testar usando o interno do Django
+
+## Aqui iremos configurar para usar as variaveis do DECOUPLE, pois usaremos e-mail de verdade no Heroku
+EMAIL_BACKEND = config('EMAIL_BACKEND')
+EMAIL_HOST = config('EMAIL_HOST')
+EMAIL_PORT = config('EMAIL_PORT', cast=int)
+EMAIL_USE_TLS = config('EMAIL_USE_TLS', cast=bool)
+EMAIL_HOST_USER = config('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWD = config('EMAIL_HOST_PASSWD')
