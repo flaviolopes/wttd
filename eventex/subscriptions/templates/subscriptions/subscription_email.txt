@@ -1,0 +1,15 @@
+Olá! Tudo bem?
+
+Muito obrigada por se inscrever no Eventex.
+
+Estes foram os daods que você nos forneceu em sua incrição:
+
+Nome: {{ name }}
+CPF: {{ cpf }}
+Email: {{ email }}
+Telefone: {{ phone }}
+
+Em até 48 horas úteis a nossa equipe entrará en contato,
+
+Att,
+Morena
