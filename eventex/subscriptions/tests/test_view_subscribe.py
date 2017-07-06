@@ -2,7 +2,10 @@ from django.core import mail
 from django.test import TestCase
 from eventex.subscriptions.forms import SubscriptionForm
 
-class SubscribeTest(TestCase):
+## Este esta o nome da classe antes da refatoração
+#class SubscribeTest(TestCase):
+## E este é o nome da classe após a refatoração
+class SubscribeGet(TestCase):
     # def test_get(self):
     #     """Get /incricao/ must return code 200"""
     #     response = self.client.get('/inscricao/')
@@ -27,13 +30,27 @@ class SubscribeTest(TestCase):
         """Must use subscriptions/subscription_form.html"""
         self.assertTemplateUsed(self.resp, 'subscriptions/subscription_form.html')
 
+    # # Antes da refatoração estava assim:
+    # def test_html(self):
+    #     """Html must contain input tags"""
+    #     self.assertContains(self.resp, '<form')
+    #     self.assertContains(self.resp, '<input', 6)
+    #     self.assertContains(self.resp, 'type="text"', 3)
+    #     self.assertContains(self.resp, 'type="email"')
+    #     self.assertContains(self.resp, 'type="submit"')
+
+    ## Aqui é apos a refatoração onde ele usa um módulo de subtestes:
     def test_html(self):
         """Html must contain input tags"""
-        self.assertContains(self.resp, '<form')
-        self.assertContains(self.resp, '<input', 6)
-        self.assertContains(self.resp, 'type="text"', 3)
-        self.assertContains(self.resp, 'type="email"')
-        self.assertContains(self.resp, 'type="submit"')
+        tags = (('<form',1),
+                ('<input', 6),
+                ('type="text"', 3),
+                ('type="email"', 1),
+                ('type="submit"', 1))
+
+        for text, count in tags:
+            with self.subTest():
+                self.assertContains(self.resp, text, count)
 
     def test_csrf(self):
         """Html must contain CSRF"""
@@ -45,10 +62,11 @@ class SubscribeTest(TestCase):
         form = self.resp.context['form']
         self.assertIsInstance(form, SubscriptionForm)
 
-    def test_form_has_fields(self):
-        """ Form must have 4 fields"""
-        form = self.resp.context['form']
-        self.assertSequenceEqual(['name', 'cpf', 'email', 'phone'], list(form.fields))
+    '''Ele criou um novo módulo somente para este teste "test_form_subscription", recortou daqui e colou lá'''
+    # def test_form_has_fields(self):
+    #     """ Form must have 4 fields"""
+    #     form = self.resp.context['form']
+    #     self.assertSequenceEqual(['name', 'cpf', 'email', 'phone'], list(form.fields))
 
 ## Esta é a que ele criou para o "post" de informações quando o usuário preenche o formulário
 # class SubscribePostTest(TestCase):
@@ -65,8 +83,12 @@ class SubscribeTest(TestCase):
 #         ## redirecionar o usuário de volta para a página de inscrição
 #         self.assertEqual(302, response.status_code)
 
-## Assim ficcou refatorada a a classe "SubscribePostTest":
-class SubscribePostTest(TestCase):
+
+### Assim ficou refatorada a a classe "SubscribePostTest":
+## Este esta o nome da classe antes da refatoração:
+#class SubscribePostTest(TestCase):
+## Este esta o nome da classe após a refatoração
+class SubscribeValid(TestCase):
     def setUp(self):
         data = dict(name='Henrique Bastos', cpf='12345678901',
                     email='henrique@bastos.net', phone='21-99618-6180')
@@ -77,43 +99,51 @@ class SubscribePostTest(TestCase):
         """Valid POST should redirect to /inscricao/"""
         self.assertEqual(302, self.resp.status_code)
 
+
     ## Aqui estamos criando um teste para os e-mails enviandos.
     ## "mail.outbox" é um recurso interno do Django que ele usou para simular o envio de mails. Para isso ele foi na
     ## "views.py da App "subscriptions" e fez o código de simulação de envio de e-mails "mail.send_mail"
     def test_send_subscribe_email(self):
         self.assertEqual(1, len(mail.outbox))
 
-    ## Aqui estamos escrevendo um teste para a formatação dos e-mails, no caso o "Subject"
-    def test_subscription_email_subject(self):
-        email = mail.outbox[0]
-        expect = 'Confirmação de inscrição'
 
-        self.assertEqual(expect, email.subject)
+    ''' A partir daqui tudo que foi relativo ao e-mail (o que está sendo enviado) ele criou o "test_mail_subscribe" e copiou para lá '''
+    # ## Aqui estamos escrevendo um teste para a formatação dos e-mails, no caso o "Subject"
+    # def test_subscription_email_subject(self):
+    #     email = mail.outbox[0]
+    #     expect = 'Confirmação de inscrição'
+    #
+    #     self.assertEqual(expect, email.subject)
+    #
+    # ## Aqui estamos escrevendo um teste para a formatação dos e-mails, no caso o "Remetente"
+    # def test_subscription_email_from(self):
+    #     email = mail.outbox[0]
+    #     expect = 'contato@eventex.com.br'
+    #
+    #     self.assertEqual(expect, email.from_email)
+    #
+    # ## Aqui estamos escrevendo um teste para a formatação dos e-mails, no caso o "Destinatário"
+    # def test_subscription_email_to(self):
+    #     email = mail.outbox[0]
+    #     expect = ['contato@eventex.com.br', 'henrique@bastos.net']
+    #
+    #     self.assertEqual(expect, email.to)
+    #
+    # ## Aqui estamos escrevendo um teste para a formatação dos e-mails, no caso o CORPO DO E-MAIL"
+    # def test_subscription_email_body(self):
+    #     email = mail.outbox[0]
+    #
+    #     self.assertIn('Henrique Bastos', email.body)
+    #     self.assertIn('12345678901', email.body)
+    #     self.assertIn('henrique@bastos.net', email.body)
+    #     self.assertIn('21-99618-6180', email.body)
 
-    ## Aqui estamos escrevendo um teste para a formatação dos e-mails, no caso o "Remetente"
-    def test_subscription_email_from(self):
-        email = mail.outbox[0]
-        expect = 'contato@eventex.com.br'
 
-        self.assertEqual(expect, email.from_email)
 
-    ## Aqui estamos escrevendo um teste para a formatação dos e-mails, no caso o "Destinatário"
-    def test_subscription_email_to(self):
-        email = mail.outbox[0]
-        expect = ['contato@eventex.com.br', 'henrique@bastos.net']
-
-        self.assertEqual(expect, email.to)
-
-    ## Aqui estamos escrevendo um teste para a formatação dos e-mails, no caso o CORPO DO E-MAIL"
-    def test_subscription_email_body(self):
-        email = mail.outbox[0]
-
-        self.assertIn('Henrique Bastos', email.body)
-        self.assertIn('12345678901', email.body)
-        self.assertIn('henrique@bastos.net', email.body)
-        self.assertIn('21-99618-6180', email.body)
-
-class SubscribeInvalidPost(TestCase):
+## Este esta o nome da classe antes da refatoração
+#class SubscribeInvalidPost(TestCase):
+## Este esta o nome da classe após a refatoração
+class SubscribePostInvalid(TestCase):
     # def test_post(self):
     #     """Invalid POST should not redirect"""
     #     response = self.client.post('/inscricao/', {}) ## aqui estamos passando um dicionario vazio, simulnaod que não
@@ -139,6 +169,8 @@ class SubscribeInvalidPost(TestCase):
         form = self.resp.context['form']
         self.assertTrue(form.errors)
 
+
+## Aqui ele manteve o nome da classe
 class SubscribeSuccessMessage(TestCase):
     def test_message(self):
         data = dict(name='Henrique Bastos', cpf='12345678901',
