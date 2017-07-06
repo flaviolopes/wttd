@@ -2,6 +2,10 @@
 
 Sistema de eventos encomendado pela Morena
 
+[![Build Status](https://travis-ci.org/flaviolopes/wttd.svg?branch=master)](https://travis-ci.org/flaviolopes/wttd)
+[![Code Health](https://landscape.io/github/flaviolopes/wttd/master/landscape.svg?style=flat)](https://landscape.io/github/flaviolopes/wttd/master)
+
+
 ## Como desenvolver?
 
 1. Clone o repositório
